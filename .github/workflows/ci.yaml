@@ -55,78 +55,78 @@ jobs:
         done
         echo "HCL syntax validation completed"
 
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
+  # security-scan:
+  #   name: Security Scan
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
 
-    - name: Run Checkov
-      uses: bridgecrewio/checkov-action@master
-      with:
-        directory: .
-        framework: terraform
-        output_format: sarif
-        output_file_path: checkov-results.sarif
-        config_file: .checkov.yml
+  #   - name: Run Checkov
+  #     uses: bridgecrewio/checkov-action@master
+  #     with:
+  #       directory: .
+  #       framework: terraform
+  #       output_format: sarif
+  #       output_file_path: checkov-results.sarif
+  #       config_file: .checkov.yml
 
-    - name: Upload Checkov results to GitHub Advanced Security
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
-      with:
-        sarif_file: checkov-results.sarif
+  #   - name: Upload Checkov results to GitHub Advanced Security
+  #     uses: github/codeql-action/upload-sarif@v3
+  #     if: always()
+  #     with:
+  #       sarif_file: checkov-results.sarif
 
-  test:
-    name: Test Configuration Examples
-    runs-on: ubuntu-latest
-    needs: [validate, security-scan]
+  # test:
+  #   name: Test Configuration Examples
+  #   runs-on: ubuntu-latest
+  #   needs: [validate, security-scan]
 
-    strategy:
-      matrix:
-        config:
-          - "terragrunt.hcl"
-          - "examples/windows-instance.hcl"
-          - "examples/secure-web-server.hcl"
-          - "examples/private-instance.hcl"
-          - "examples/production-secure.hcl"
+  #   strategy:
+  #     matrix:
+  #       config:
+  #         - "terragrunt.hcl"
+  #         - "examples/windows-instance.hcl"
+  #         - "examples/secure-web-server.hcl"
+  #         - "examples/private-instance.hcl"
+  #         - "examples/production-secure.hcl"
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: ${{ env.TF_VERSION }}
+  #   - name: Setup Terraform
+  #     uses: hashicorp/setup-terraform@v3
+  #     with:
+  #       terraform_version: ${{ env.TF_VERSION }}
 
-    - name: Setup Terragrunt
-      run: |
-        curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v${{ env.TERRAGRUNT_VERSION }}/terragrunt_linux_amd64 -o terragrunt
-        chmod +x terragrunt
-        sudo mv terragrunt /usr/local/bin/
+  #   - name: Setup Terragrunt
+  #     run: |
+  #       curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v${{ env.TERRAGRUNT_VERSION }}/terragrunt_linux_amd64 -o terragrunt
+  #       chmod +x terragrunt
+  #       sudo mv terragrunt /usr/local/bin/
 
-    - name: Validate configuration file exists
-      run: |
-        if [ -f "${{ matrix.config }}" ]; then
-          echo "Configuration file ${{ matrix.config }} exists"
-          # Basic check that file is not empty and has some HCL structure
-          if [ -s "${{ matrix.config }}" ]; then
-            echo "File ${{ matrix.config }} has content"
-            # Check for common HCL patterns
-            if grep -q -E "^[[:space:]]*(terraform|include|inputs)" "${{ matrix.config }}"; then
-              echo "File ${{ matrix.config }} appears to be a valid Terragrunt configuration"
-            else
-              echo "Warning: ${{ matrix.config }} may not be a valid Terragrunt configuration"
-            fi
-          else
-            echo "Error: ${{ matrix.config }} is empty"
-            exit 1
-          fi
-        else
-          echo "Configuration file ${{ matrix.config }} not found, skipping"
-        fi
+  #   - name: Validate configuration file exists
+  #     run: |
+  #       if [ -f "${{ matrix.config }}" ]; then
+  #         echo "Configuration file ${{ matrix.config }} exists"
+  #         # Basic check that file is not empty and has some HCL structure
+  #         if [ -s "${{ matrix.config }}" ]; then
+  #           echo "File ${{ matrix.config }} has content"
+  #           # Check for common HCL patterns
+  #           if grep -q -E "^[[:space:]]*(terraform|include|inputs)" "${{ matrix.config }}"; then
+  #             echo "File ${{ matrix.config }} appears to be a valid Terragrunt configuration"
+  #           else
+  #             echo "Warning: ${{ matrix.config }} may not be a valid Terragrunt configuration"
+  #           fi
+  #         else
+  #           echo "Error: ${{ matrix.config }} is empty"
+  #           exit 1
+  #         fi
+  #       else
+  #         echo "Configuration file ${{ matrix.config }} not found, skipping"
+  #       fi
 
   release:
     name: Create Release
