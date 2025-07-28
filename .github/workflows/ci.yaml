@@ -42,11 +42,10 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: release-please
         with:
-          changelog-path: CHANGELOG.md
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: terraform-module
-          monorepo-tags: true
-          command: release-pr
+          skip-github-release: true
+
 
   release-please-release:
     runs-on: ubuntu-latest
@@ -54,8 +53,6 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: tag-release
         with:
-          changelog-path: CHANGELOG.md
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: terraform-module
-          monorepo-tags: true
-          command: github-release
+          skip-github-pull-request: true

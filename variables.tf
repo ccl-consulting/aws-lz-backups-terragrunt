@@ -1,6 +1,7 @@
 variable "backups_account_id" {
   type        = string
   description = "Backup Account ID"
+  default     = "123456789012"
 }
 
 # variable "organization_id" {
