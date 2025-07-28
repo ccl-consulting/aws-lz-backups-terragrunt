@@ -1,0 +1,27 @@
+# Checkov configuration for the AWS EC2 module
+# This file allows users to customize security scanning based on their requirements
+
+# Suppress specific checks that are configurable by design
+skip-check:
+  # Allow users to choose whether to enable detailed monitoring
+  # This is a cost consideration for many users
+  - CKV_AWS_126  # "Ensure that detailed monitoring is enabled for EC2 instances"
+
+# Set thresholds for security scanning
+# soft-fail: true  # Uncomment to make security failures warnings instead of errors
+
+# Framework settings
+framework:
+  - terraform
+
+# Directory settings
+directory:
+  - .
+
+# Output settings
+output: cli
+quiet: false
+
+# Custom check directories (if you have custom checks)
+# external-checks-dir:
+#   - ./custom-checks
